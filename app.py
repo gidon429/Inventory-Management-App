@@ -32,13 +32,19 @@ def write_products_to_file(filename="products.csv", products=[]):
     filepath = os.path.join(os.path.dirname(__file__), "db", filename)
     with open(filepath, "w") as csv_file:
         writer = csv.DictWriter(csv_file, fieldnames=["id", "name", "aisle", "department", "price"])
-        writer.writeheader() # uses fieldnames set above
+        writer.writeheader()
         for product in products:
             writer.writerow(product)
 
+
 def reset_products_file(filename="products.csv", from_filename="products_default.csv"):
     products = read_products_from_file(from_filename)
-    write_products_to_file(filename, products)
+    filepath = os.path.join(os.path.dirname(__file__), "db", filename)
+    with open(filepath, "w") as csv_file:
+        writer = csv.DictWriter(csv_file, fieldnames=["id", "name", "aisle", "department", "price"])
+        writer.writeheader()
+        for product in products:
+            writer.writerow(product)
 
 def find_product(product_id, all_products):
     matching_products = [p for p in all_products if int(p["id"]) == int(product_id)]
@@ -116,6 +122,7 @@ def run():
                 print(new_product)
             new_product[attribute_name] = new_val
         products.append(new_product)
+        write_products_to_file(products=products)
 
     elif function == "Destroy":
         product = user_chosen_product(products)
@@ -126,6 +133,7 @@ def run():
             print("-----------------------------------")
             print(product)
             delete_product(product, products)
+            write_products_to_file(products=products)
 
     elif function == "Update":
         existing_product = user_chosen_product(products)
@@ -141,6 +149,7 @@ def run():
                     print("-----------------------------------")
                     print(product)
                 existing_product[attribute_name] = new_val
+                write_products_to_file(products=products)
 
     elif function == "Reset":
         print("RESET TO DEFAULT")
@@ -148,11 +157,6 @@ def run():
 
     else:
         print("Unrecognized operation, please try again.")
-
-    write_products_to_file(products=products)
-
-#def enlarge(my_number):
-#    return my_number * 100
 
 if __name__ == "__main__":
     run()
